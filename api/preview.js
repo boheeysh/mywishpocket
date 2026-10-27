@@ -126,9 +126,9 @@ function extract(html, baseUrl) {
   return { title, image, price, originalPrice, url: baseUrl };
 }
 
-// 상품명 끝에 붙는 쇼핑몰 꼬리말(" - 후기 | 무신사", " - 모든 취향 곁에, 29CM" 등)을 떼고,
+// 상품명 끝에 붙는 쇼핑몰 꼬리말(" - 사이즈 & 후기 | 무신사", " - 모든 취향 곁에, 29CM" 등)을 떼고,
 // 쇼핑몰 이름만 있는 제목("Instagram", "11번가")은 상품명이 아니므로 비운다
-const SITE_SUFFIX = /\s+[-|:·]\s*(?:후기\s*\|\s*)?(?:무신사|MUSINSA|모든 취향 곁에,\s*29CM|29CM|텐바이텐|10x10|KREAM|크림|카카오톡\s*선물하기|선물하기)\s*$/i;
+const SITE_SUFFIX = /\s+[-|:·]\s*(?:(?:사이즈\s*&\s*)?후기\s*\|\s*)?(?:무신사|MUSINSA|모든 취향 곁에,\s*29CM|29CM|텐바이텐|10x10|KREAM|크림|카카오톡\s*선물하기|선물하기)\s*$/i;
 const GENERIC_TITLE = /^(instagram|11번가|쿠팡!?|coupang|naver|네이버|오늘의집|zara|g마켓|gmarket|ssg\.com|올리브영)$/i;
 function tidyTitle(title, siteName) {
   let t = title;

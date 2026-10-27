@@ -500,6 +500,7 @@
     if (!url) { setFetchStatus('올바른 링크(https://...)를 입력해 주세요', true); return; }
     $('f-url').value = url;
     const btn = $('btn-fetch');
+    if (btn.disabled) return;   // 이미 불러오는 중
     btn.disabled = true;
     setFetchStatus('상품 정보를 불러오는 중…');
     try {
@@ -802,6 +803,15 @@
   $('btn-add').addEventListener('click', () => openSheet(null));
   $('btn-close').addEventListener('click', closeSheet);
   $('btn-fetch').addEventListener('click', fetchPreview);
+  // 링크를 붙여넣으면 바로 정보 불러오기 ('상품명 + 링크'처럼 복사돼도 링크만 골라낸다)
+  $('f-url').addEventListener('paste', (e) => {
+    const text = (e.clipboardData && e.clipboardData.getData('text')) || '';
+    const url = findUrl(text) || (/^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(text.trim()) ? text.trim() : '');
+    if (!url) return;
+    e.preventDefault();
+    $('f-url').value = url;
+    fetchPreview();
+  });
   form.addEventListener('submit', onSubmit);
   window.addEventListener('storage', (e) => {
     if (Object.values(KEY).includes(e.key)) {
