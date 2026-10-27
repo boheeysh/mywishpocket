@@ -825,16 +825,23 @@
     if (!due.length) return;
     checking = true;
     const before = new Set(items.filter((it) => (saleInfo(it) || {}).auto).map((it) => it.id));
-    for (const { id, url } of due) {
-      let data = null;
-      try { const r = await fetchInfo(url); if (r.ok) data = r.data; } catch { /* 막힌 쇼핑몰은 다음 확인 때 다시 시도 */ }
-      const cur = items.find((x) => x.id === id);   // 확인하는 동안 지워지거나 링크가 바뀌었을 수 있다
-      if (!cur || cur.url !== url) continue;
-      cur.checkedAt = Date.now();
-      if (data && data.price != null) { cur.autoPrice = data.price; cur.autoOriginal = data.originalPrice ?? null; }
-    }
+    // 느린 쇼핑몰 하나가 전체를 붙잡지 않도록 3개씩 동시에 확인하고, 하나 끝날 때마다 바로 저장한다
+    const queue = [...due];
+    const worker = async () => {
+      for (let job = queue.shift(); job; job = queue.shift()) {
+        const { id, url } = job;
+        let data = null;
+        try { const r = await fetchInfo(url); if (r.ok) data = r.data; } catch { /* 막힌 쇼핑몰은 다음 확인 때 다시 시도 */ }
+        const cur = items.find((x) => x.id === id);   // 확인하는 동안 지워지거나 링크가 바뀌었을 수 있다
+        if (!cur || cur.url !== url) continue;
+        cur.checkedAt = Date.now();
+        if (data && data.price != null) { cur.autoPrice = data.price; cur.autoOriginal = data.originalPrice ?? null; }
+        save(); renderSummary(); renderSaleBoard();
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
     checking = false;
-    save(); render();
+    render();
     const newly = items.filter((it) => (saleInfo(it) || {}).auto && !before.has(it.id)).length;
     if (newly) toast(`위시 ${newly}개의 가격이 내려갔어요!`);
   }
