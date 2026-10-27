@@ -1,0 +1,11 @@
+# API 키 등 비밀 정보는 절대 GitHub에 올리지 않는다
+.env
+.env.*
+!.env.example
+
+node_modules/
+.vercel/
+.DS_Store
+
+# AI 상호작용 기록·스크린샷은 내 컴퓨터에만 보관
+docs/

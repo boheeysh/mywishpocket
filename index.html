@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>마이위시포켓</title>
+  <meta name="description" content="여러 쇼핑몰의 위시 상품 링크를 한곳에 모아 한눈에 보는 위시리스트">
+  <meta name="theme-color" content="#fffaf9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1617" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="마이위시포켓">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4.5 4.5h15v7a7.5 7.5 0 0 1-15 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4.5 8h15" stroke="currentColor" stroke-width="2"/><path d="M12 16.2s-3-1.8-3-3.8a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2-3 3.8-3 3.8z" fill="currentColor"/></svg>
+        </span>
+        <div class="brand-text">
+          <p class="tagline">한 눈에 보는 나의 위시리스트,</p>
+          <h1 class="logo">마이위시포켓</h1>
+        </div>
+      </div>
+      <div class="summary" aria-live="polite">
+        <span class="summary-label">위시 <b id="count-all">0</b>개</span>
+        <span class="summary-total" id="total-all">0원</span>
+      </div>
+    </div>
+    <section class="sale-board" id="sale-board" aria-label="세일 알림판">
+      <div class="sale-inner">
+        <span class="sale-title">세일 알림</span>
+        <div class="sale-list" id="sale-list"></div>
+      </div>
+    </section>
+  </header>
+
+  <main class="wrap">
+    <!-- 위시 탭 -->
+    <section class="view" id="view-wish" aria-label="위시">
+      <div class="folders" id="folders" role="tablist" aria-label="폴더"></div>
+      <div id="wish-list" class="grid"></div>
+    </section>
+
+    <!-- 우선순위 탭 -->
+    <section class="view" id="view-priority" aria-label="우선순위" hidden>
+      <h2 class="view-title">구매 우선순위</h2>
+      <p class="view-desc">별이 많을수록 먼저 살 위시템이에요.</p>
+      <div id="priority-list"></div>
+    </section>
+
+    <!-- 구매 기준 탭 -->
+    <section class="view" id="view-criteria" aria-label="나의 구매 기준" hidden>
+      <h2 class="view-title">나의 구매 기준</h2>
+      <p class="view-desc">사기 전에 스스로에게 던질 질문이에요. 위시를 등록할 때 체크리스트로 나오고,
+        <b>'예'가 많을수록 별을 많이</b> 추천해 줘요. 모든 질문은 '예'가 "사도 좋다"는 뜻이 되도록 써 주세요.</p>
+      <ol class="criteria" id="criteria-list"></ol>
+      <form class="criteria-add" id="criteria-add">
+        <input type="text" id="criteria-input" maxlength="60" placeholder="새 질문 (예: 오래 고민해 온 물건인가?)" aria-label="새 질문">
+        <button type="submit" class="btn">추가</button>
+      </form>
+      <button type="button" class="link-btn" id="criteria-reset">기본 질문으로 되돌리기</button>
+    </section>
+
+    <!-- 이용 방법 탭 -->
+    <section class="view guide" id="view-guide" aria-label="이용 방법" hidden>
+      <h2 class="view-title">이용 방법</h2>
+      <p class="view-desc">여러 쇼핑몰에 흩어진 위시템을 한 주머니에 모아 두는 곳이에요.</p>
+
+      <ol class="guide-steps">
+        <li><b>링크 복사</b><span>쇼핑몰에서 마음에 드는 상품의 링크를 복사해요.</span></li>
+        <li><b>붙여넣고 불러오기</b><span>오른쪽 아래 <b>＋</b>를 누르고 링크를 붙여넣은 뒤 '정보 불러오기'를 눌러요.</span></li>
+        <li><b>구매 기준 체크</b><span>질문에 답하면 '예'가 많을수록 별(우선순위)을 많이 추천해 드려요.</span></li>
+        <li><b>폴더에 저장</b><span>폴더를 고르고 저장하면 끝! 세일가와 종료일을 넣으면 위쪽 세일 알림판에 모여요.</span></li>
+      </ol>
+
+      <div class="guide-card">
+        <h3>세일 정보는 자동으로도 모여요</h3>
+        <ul class="guide-tips">
+          <li><b>담을 때</b> 29CM·무신사처럼 원래 가격을 함께 알려 주는 쇼핑몰은 세일 중인지 알아서 확인해 알림판에 띄워요.</li>
+          <li><b>담아 둔 뒤에도</b> 앱을 열면 하루 한 번 담아 둔 상품의 지금 가격을 확인해요. 담을 때보다 싸졌으면 <b>'자동'</b> 표시와 함께 알림판에 올라오고, 가격이 돌아오면 저절로 내려가요.</li>
+          <li><b>종료일은 직접</b> 쇼핑몰이 세일 종료일은 알려 주지 않아서 '기간 미정'으로 보여요. 종료일을 알면 '수정'에서 세일가와 종료일을 넣어 주세요. 직접 넣은 정보가 항상 먼저예요.</li>
+          <li><b>참고</b> 정보를 자동으로 불러오지 못하는 쇼핑몰(쿠팡·네이버·오늘의집 등)은 가격 확인도 어려워서, 세일 정보를 직접 넣어 주셔야 해요.</li>
+        </ul>
+      </div>
+
+      <div class="guide-card">
+        <h3>정보를 자동으로 불러오는 쇼핑몰</h3>
+        <ul class="site-chips ok">
+          <li>무신사</li><li>29CM</li><li>텐바이텐</li><li>KREAM</li><li>카카오톡 선물하기</li>
+        </ul>
+        <p class="hint">이 밖에도 상품 정보를 공개해 둔 쇼핑몰이라면 대부분 상품명·사진·가격을 불러올 수 있어요.</p>
+      </div>
+
+      <div class="guide-card warm">
+        <h3>직접 입력이 필요한 쇼핑몰</h3>
+        <ul class="site-chips">
+          <li>쿠팡</li><li>네이버 스마트스토어</li><li>오늘의집</li><li>올리브영</li><li>SSG</li><li>G마켓</li><li>11번가</li><li>인스타그램</li>
+        </ul>
+        <p>어떤 쇼핑몰은 상품 정보를 꼭꼭 숨겨 두어서, 마이위시포켓이 대신 읽어 오지 못해요.
+          그럴 땐 조금 번거로우시겠지만 <b>상품명과 가격만 살짝 적어 주세요.</b>
+          링크는 그대로 저장되니까 '사이트로 이동'으로 언제든 그 상품을 다시 만날 수 있어요.
+          당신의 소중한 위시템, 마이위시포켓이 예쁘게 담아 둘게요.</p>
+        <p class="hint">네이버 스마트스토어 상품은 '사이트로 이동'을 누르면 네이버 로그인 화면이 먼저 나와요.
+          네이버 정책이라 앱에서 건너뛸 수는 없지만, 로그인하면 바로 그 상품 페이지로 이어져요.</p>
+      </div>
+
+      <div class="guide-card">
+        <h3>휴대폰에서 더 편하게</h3>
+        <ul class="guide-tips">
+          <li><b>홈 화면에 설치</b> 브라우저 메뉴의 '홈 화면에 추가'를 누르면 앱처럼 쓸 수 있어요.</li>
+          <li><b>공유로 바로 담기 (안드로이드)</b> 설치 후 쇼핑 앱에서 '공유 → 마이위시포켓'을 고르면 등록 화면이 바로 열려요.</li>
+          <li><b>링크 복사로 담기 (아이폰)</b> 아이폰은 공유 목록에 마이위시포켓이 나오지 않아요. 대신 이렇게 해 주세요.
+            <ol class="guide-sub">
+              <li>Safari에서 마이위시포켓을 열고 <b>공유 버튼(□↑) → '홈 화면에 추가'</b>로 설치해요.</li>
+              <li>쇼핑 앱에서 <b>공유 → '링크 복사'</b>(또는 '복사')를 눌러요.</li>
+              <li>홈 화면의 마이위시포켓을 열고 <b>＋</b>를 누른 뒤, 상품 링크 칸을 길게 눌러 <b>'붙여넣기'</b> 하고 '정보 불러오기'를 눌러요.</li>
+            </ol>
+          </li>
+          <li><b>백업</b> 위시는 이 기기에만 저장돼요. 기기를 바꾸기 전에 맨 아래 '백업 파일 저장'을 눌러 두세요.</li>
+          <li><b>엑셀로 저장</b> 맨 아래 '엑셀로 저장'을 누르면 위시 목록이 엑셀 파일(.xlsx)로 저장돼요. 메일에 첨부해 보내거나 친구와 나눌 수 있어요. (엑셀 파일은 보기용이고, 앱으로 다시 불러올 때는 '백업 파일'을 써 주세요.)</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <button type="button" class="link-btn" id="btn-excel">엑셀로 저장</button>
+      <span aria-hidden="true">·</span>
+      <button type="button" class="link-btn" id="btn-export">백업 파일 저장</button>
+      <span aria-hidden="true">·</span>
+      <label class="link-btn" for="file-import">백업 불러오기</label>
+      <input type="file" id="file-import" accept="application/json,.json" hidden>
+      <span id="install-wrap" hidden><span aria-hidden="true">·</span>
+        <button type="button" class="link-btn" id="btn-install">홈 화면에 설치</button></span>
+      <p class="foot-note">데이터는 이 기기의 브라우저에만 저장됩니다.</p>
+    </footer>
+  </main>
+
+  <button type="button" class="fab" id="btn-add" aria-label="위시 추가">＋</button>
+
+  <nav class="tabbar" aria-label="메뉴">
+    <button type="button" class="tab" data-view="wish" aria-current="page"><span class="tab-ic">♡</span>위시</button>
+    <button type="button" class="tab" data-view="priority"><span class="tab-ic">★</span>우선순위</button>
+    <button type="button" class="tab" data-view="criteria"><span class="tab-ic">✓</span>구매 기준</button>
+    <button type="button" class="tab" data-view="guide"><span class="tab-ic">?</span>이용 방법</button>
+  </nav>
+
+  <!-- 위시 등록·수정 -->
+  <dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+    <form id="form" method="dialog" novalidate>
+      <div class="sheet-head">
+        <h2 id="sheet-title">위시 추가</h2>
+        <button type="button" class="icon-btn" id="btn-close" aria-label="닫기">✕</button>
+      </div>
+
+      <label class="field">
+        <span>상품 링크</span>
+        <div class="url-row">
+          <input type="url" id="f-url" placeholder="https://..." inputmode="url" autocomplete="off">
+          <button type="button" class="btn ghost" id="btn-fetch">정보 불러오기</button>
+        </div>
+        <small class="hint" id="fetch-status"></small>
+      </label>
+
+      <div class="preview" id="f-preview" hidden><img alt="" id="f-preview-img"></div>
+
+      <label class="field"><span>상품명 <em>*</em></span>
+        <input type="text" id="f-title" maxlength="120" placeholder="예: 울 블렌드 코트">
+      </label>
+
+      <div class="field-row">
+        <label class="field"><span>가격(원)</span>
+          <input type="text" id="f-price" inputmode="numeric" placeholder="예: 129,000">
+        </label>
+        <label class="field"><span>폴더</span>
+          <select id="f-folder"></select>
+        </label>
+      </div>
+      <div class="field new-folder" id="new-folder-row" hidden>
+        <input type="text" id="f-new-folder" maxlength="20" placeholder="새 폴더 이름 (예: 옷)" aria-label="새 폴더 이름">
+      </div>
+
+      <details class="sale-box" id="sale-box">
+        <summary>세일 정보 <small>(선택)</small></summary>
+        <div class="field-row">
+          <label class="field"><span>세일가(원)</span>
+            <input type="text" id="f-sale-price" inputmode="numeric" placeholder="예: 103,200">
+          </label>
+          <label class="field"><span>세일 종료일</span>
+            <input type="date" id="f-sale-end">
+          </label>
+        </div>
+      </details>
+
+      <fieldset class="field check-box">
+        <legend>나의 구매 기준 체크</legend>
+        <ul class="checks" id="f-checks"></ul>
+        <p class="recommend" id="recommend"></p>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend>구매 우선순위</legend>
+        <div class="star-pick" id="star-pick" role="radiogroup" aria-label="별점"></div>
+      </fieldset>
+
+      <label class="field"><span>메모</span>
+        <textarea id="f-memo" rows="2" maxlength="300" placeholder="사이즈, 색상 등"></textarea>
+      </label>
+
+      <p class="form-error" id="form-error" role="alert"></p>
+      <button type="submit" class="btn primary" id="btn-save">저장</button>
+    </form>
+  </dialog>
+
+  <!-- 폴더 관리 -->
+  <dialog id="folder-sheet" class="sheet" aria-labelledby="folder-title">
+    <form id="folder-form" method="dialog" novalidate>
+      <div class="sheet-head">
+        <h2 id="folder-title">폴더 관리</h2>
+        <button type="button" class="icon-btn" id="folder-close" aria-label="닫기">✕</button>
+      </div>
+      <p class="hint">'내 위시템'에서는 모든 위시를 볼 수 있어요. 폴더를 지우면 안의 위시는 남고 폴더 지정만 풀려요.</p>
+      <ul class="folder-manage" id="folder-manage"></ul>
+      <div class="criteria-add">
+        <input type="text" id="folder-input" maxlength="20" placeholder="새 폴더 이름" aria-label="새 폴더 이름">
+        <button type="button" class="btn" id="folder-add">추가</button>
+      </div>
+      <p class="form-error" id="folder-error" role="alert"></p>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <template id="card-tpl">
+    <article class="card">
+      <div class="pin">
+        <a class="thumb" target="_blank" rel="noopener noreferrer"><img alt="" loading="lazy"></a>
+        <p class="sale-tag"></p>
+        <a class="go" target="_blank" rel="noopener noreferrer">사이트로 이동 ↗</a>
+      </div>
+      <div class="card-body">
+        <div class="card-meta"><span class="folder-name"></span><span class="stars"></span></div>
+        <h3 class="card-title"><a target="_blank" rel="noopener noreferrer"></a></h3>
+        <p class="price"></p>
+        <p class="memo"></p>
+        <p class="sub"></p>
+        <p class="note"></p>
+        <div class="card-actions">
+          <button type="button" class="text-btn" data-act="edit">수정</button>
+          <button type="button" class="text-btn danger" data-act="delete">삭제</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
