@@ -206,7 +206,7 @@ img { display: block; max-width: 100%; }
 .site-chips.ok li { background: var(--ink); color: var(--bg); }
 .guide-card.warm .site-chips li { background: var(--paper); }
 .guide-tips { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14px; }
-.guide-tips b { display: block; }
+.guide-tips > li > b:first-child { display: block; }
 .guide-sub { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; color: var(--sub); font-size: 13.5px; }
 .guide-sub b { display: inline; color: var(--ink); }
 
